@@ -4,7 +4,7 @@
 2. run pip install django && djangorestframework
 3. run python manage.py migrate
 4. run python manage.py createsuperuser 
-(not sure if you'll need this for tests, but there's no formal database as Django has a built-in dev database *talk about efficient*)
+(not sure if you'll need this for tests, but there's no formal database as Django has a built-in dev database **talk about neat**)
 	- create your login credentials 
 	- access localhost:8000/admin in browser
 	- In the 'Vending machines' table
