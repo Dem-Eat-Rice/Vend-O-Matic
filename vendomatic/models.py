@@ -13,7 +13,6 @@ class Beverage(models.Model):
     id = models.AutoField(primary_key=True)
     type = models.CharField(max_length=50)
     cost = models.IntegerField(default=2)
-    amount_remaining = models.IntegerField(null=True)
     machine = models.ForeignKey('VendingMachine', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
