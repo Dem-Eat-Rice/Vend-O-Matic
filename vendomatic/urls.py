@@ -18,7 +18,7 @@ from django.urls import path
 from vendomatic import views
 
 urlpatterns = [
-    path('/', views.coin_function),
+    path('', views.coin_function),
     path('admin/', admin.site.urls),
     path('inventory/', views.inventory_count),
     path('inventory/<int:id>/', views.type_count)

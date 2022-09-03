@@ -4,7 +4,7 @@ from .models import VendingMachine, Beverage
 class VendingMachineSerializer(serializers.ModelSerializer):
     class Meta:
         model = VendingMachine
-        fields = ['id', 'name', 'coin_count']
+        fields = ['id', 'name', 'coin']
 
 class BeverageSerializer(serializers.ModelSerializer):
     class Meta:

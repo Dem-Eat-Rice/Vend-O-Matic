@@ -8,10 +8,16 @@ from rest_framework import status
 
 @api_view(['PUT', 'DELETE'])
 def coin_function(request):
+    vendingmachine = VendingMachine.objects.get(name='GoodYear Tire Lobby')
+    serializer = VendingMachineSerializer(vendingmachine)
     if request.method == 'PUT':
-        print(request.body)
+        vendingmachine.coin = vendingmachine.coin + request.data['coin']
+        vendingmachine.save()
+        return Response(status=status.HTTP_204_NO_CONTENT, headers={'X-Coins': request.data['coin']})
     elif request.method == 'DELETE':
-        pass
+        return Response(headers={'X-Coins': request.data['coin']})
+
+
 
 @api_view(['GET'])
 def inventory_count(request):
@@ -26,8 +32,8 @@ def inventory_count(request):
 def type_count(request, id):
     if request.method == 'GET':
         beverage = Beverage.objects.get(id=id)
-        specific_beverage = Beverage.objects.filter(type=beverage)
+        specific_beverage = Beverage.objects.filter(type=beverage).count()
         return Response(specific_beverage, status=status.HTTP_200_OK)
     elif request.method == 'PUT':
 
-        return Response({'quantity': 'COME BACK TO THIS'}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
