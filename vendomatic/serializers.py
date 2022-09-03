@@ -9,4 +9,4 @@ class VendingMachineSerializer(serializers.ModelSerializer):
 class BeverageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Beverage
-        fields = ['id', 'type', 'cost', 'amount_remaining', 'machine']
+        fields = ['id', 'type', 'cost', 'items_remaining', 'machine']
