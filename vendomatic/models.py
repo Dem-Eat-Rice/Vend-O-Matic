@@ -36,14 +36,6 @@ class Inventory(models.Model):
     def purchase_success(self, id):
         pass
 
-    # Counts the current amount of a specific beverage
-    def count_type(self, type):
-        if type == 'SODA':
-            return self.soda_count
-        elif type == 'WATER':
-            return self.water_count
-        elif type == 'JUICE':
-            return self.juice_count
 
 
 class Beverage(models.Model):

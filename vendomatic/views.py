@@ -35,11 +35,12 @@ def inventory_count(request):
 @api_view(['GET', 'PUT'])
 def type_count(request, id):
     beverage = Beverage.objects.get(id=id)
-    specific_beverage_count = Beverage.objects.filter(name=beverage).count()
-    # inventory = Inventory.objects.filter(Inventory.name == beverage.inventory_name)
-    # vendingmachine = VendingMachine.objects.get(VendingMachine.name == inventory.machine_name)
+    inventory = Inventory.objects.get(name=beverage.inventory_name)
+    vendingmachine = VendingMachine.objects.get(name=inventory.machine_name)
 
+    print(inventory.name, inventory.machine_name, inventory.soda_count, inventory.water_count, inventory.juice_count)
     if request.method == 'GET':
+        specific_beverage_count = Beverage.objects.filter(name=beverage).count()
         return Response(specific_beverage_count, status=status.HTTP_200_OK)
     elif request.method == 'PUT':
         
