@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import VendingMachine, Beverage
+from .models import VendingMachine, Inventory, Beverage
 
 class VendingMachineSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,4 +9,9 @@ class VendingMachineSerializer(serializers.ModelSerializer):
 class BeverageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Beverage
-        fields = ['id', 'type', 'cost', 'items_remaining', 'machine']
+        fields = ['id', 'name', 'cost', 'inventory_name']
+
+class InventorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Inventory
+        fields = ['id', 'name', 'machine_name', 'soda_count', 'water_count', 'juice_count']

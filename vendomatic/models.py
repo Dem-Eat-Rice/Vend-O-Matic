@@ -2,21 +2,66 @@ from django.db import models
 
 
 class VendingMachine(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
     coin = models.PositiveIntegerField(default=0, null=True, blank=True)
 
     def __str__(self):
         return self.name
 
-class Beverage(models.Model):
-    id = models.AutoField(primary_key=True)
-    type = models.CharField(max_length=50)
-    cost = models.IntegerField(default=2)
-    items_remaining = models.IntegerField(default=5)
-    machine = models.ForeignKey('VendingMachine', on_delete=models.CASCADE, null=True)
+    def add_coin(self, coins):
+        self.coin += coins
+        return self.coin
+
+    def return_coin(self):
+        coins_returned = self.coin
+        self.coin = 0
+        return coins_returned
+
+    def purchase(self):
+        self.coin -= 2
+        return self.coin
+
+
+
+class Inventory(models.Model):
+    name = models.CharField(max_length=100)
+    machine_name = models.OneToOneField(VendingMachine, on_delete=models.CASCADE, null=True, blank=True)
+    soda_count = models.PositiveIntegerField(default=5, null=False, blank=False)
+    water_count = models.PositiveIntegerField(default=5, null=False, blank=False)
+    juice_count = models.PositiveIntegerField(default=5, null=False, blank=False)
 
     def __str__(self):
-        return self.type
+        return self.name
+
+    def purchase_success(self, id):
+        pass
+
+    # Counts the current amount of a specific beverage
+    def count_type(self, type):
+        if type == 'SODA':
+            return self.soda_count
+        elif type == 'WATER':
+            return self.water_count
+        elif type == 'JUICE':
+            return self.juice_count
+
+
+class Beverage(models.Model):
+    
+    typeofbeverage = (
+        ('SODA', 'SODA'),
+        ('WATER', 'WATER'),
+        ('JUICE', 'JUICE'),
+    )
+
+    name = models.CharField(max_length=5, choices=typeofbeverage, null=True, blank=True)
+    cost = models.IntegerField(default=2)
+    inventory_name = models.ForeignKey('Inventory', on_delete=models.CASCADE, null=True, blank=True)
+    
+    def __str__(self):
+        return self.name
+
+
+
 
 
