@@ -21,5 +21,5 @@ urlpatterns = [
     path('', views.coin_function),
     path('admin/', admin.site.urls),
     path('inventory/', views.inventory_count),
-    path('inventory/<int:id>/', views.type_count)
+    path('inventory/<int:id>/', views.select_and_purchase)
 ]
