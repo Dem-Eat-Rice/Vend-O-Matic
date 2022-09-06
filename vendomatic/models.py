@@ -1,10 +1,11 @@
 from django.db import models
-
+# Models used to generate the database columns
 
 class VendingMachine(models.Model):
     name = models.CharField(max_length=100)
-    coin = models.PositiveIntegerField(default=0, null=True, blank=True)
-    total_coin = models.PositiveIntegerField(default=0, null=True, blank=True)
+    coin = models.PositiveIntegerField(default=0, null=False, blank=False)
+    total_coin = models.PositiveIntegerField(default=0, null=True, blank=False)
+    vended_items = models.PositiveIntegerField(default=0, null=False, blank=False)
 
     def __str__(self):
         return self.name
@@ -20,10 +21,14 @@ class VendingMachine(models.Model):
         return coins_returned
 
     def item_vended(self):
-        self.coin -= 2
-        self.total_coin += 2
+        if self.coin >= 2:
+            self.coin -= 2
+            self.total_coin += 2
         return self.coin
 
+    def vended_items_count(self):
+        self.vended_items += 1
+        return self.vended_items
 
 
 class Inventory(models.Model):
@@ -35,17 +40,17 @@ class Inventory(models.Model):
     
     def __str__(self):
         return self.name
-
+# Checks the name being passed in to update the appropriate beverage counts above
     def item_vended(self, name):
         if (name == 'SODA') and (self.soda_count > 0):
                 self.soda_count -= 1
-                return name
+                return 1
         elif (name == 'WATER') and (self.water_count > 0):
                 self.water_count -= 1
-                return name
+                return 1
         elif (name == 'JUICE') and (self.juice_count > 0):
                 self.juice_count -= 1
-                return name
+                return 1
         else:
             return False
 
@@ -71,7 +76,7 @@ class Beverage(models.Model):
         ('WATER', 'WATER'),
         ('JUICE', 'JUICE'),
     )
-
+# name field will be limited to the choices in typesofbeverage
     name = models.CharField(max_length=5, choices=typeofbeverage, null=True, blank=True)
     cost = models.IntegerField(default=2)
     inventory_name = models.ForeignKey('Inventory', on_delete=models.CASCADE, null=True, blank=True)

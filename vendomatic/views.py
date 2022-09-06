@@ -1,8 +1,6 @@
 from operator import inv
 from unicodedata import name
-from django.http import JsonResponse
 from .models import Inventory, VendingMachine, Beverage
-from .serializers import VendingMachineSerializer, BeverageSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -31,15 +29,13 @@ def inventory_count(request):
     # request.path returns '/inventory/', so below we change it to 'inventory'
     path = request.path[1:len(request.path)-1]
     inventory = Inventory.objects.get(name=path)
+    # I'm sure there's a more effecient way to set these inventory values
+    inventory.soda_count = Beverage.objects.filter(name="SODA").count()
+    inventory.water_count = Beverage.objects.filter(name="WATER").count()
+    inventory.juice_count = Beverage.objects.filter(name="JUICE").count()
+    inventory.save()
+
     remaining_beverages = inventory.get_inventory_count()
-    """
-    Omitting the below. Would use if we didn't assume that the vending machine 
-        would start off fully stocked.
-    """
-    # inventory.soda_count = Beverage.objects.filter(name="SODA").count()
-    # inventory.water_count = Beverage.objects.filter(name="WATER").count()
-    # inventory.juice_count = Beverage.objects.filter(name="JUICE").count()
-    # inventory.save()
     return Response(remaining_beverages, status=status.HTTP_200_OK)
 
 
@@ -47,25 +43,30 @@ def inventory_count(request):
 # This is where we check individual item stock via GET request or purchase an item via PUT request
 @api_view(['GET', 'PUT'])
 def select_and_purchase(request, id):
+    # We grab the beverage with the id indicated in the url
+    # Then we relate that beverage to an inventory and vending machine
+    # Might want to consider refactoring by changing the models or using different queries
     beverage = Beverage.objects.get(id=id)
     inventory = Inventory.objects.get(name=beverage.inventory_name)
     vendingmachine = VendingMachine.objects.get(name=inventory.machine_name)
     specific_beverage_count = Beverage.objects.filter(name=beverage).count()
-    
+
     if request.method == 'GET':
         return Response(specific_beverage_count, status=status.HTTP_200_OK)
     elif request.method == 'PUT':
-        if beverage.id:
+        if specific_beverage_count > 0:
             # Check that we have at least 2 coins to vend an item
             if vendingmachine.coin > 1:
-                    inventory.item_vended(beverage.name)
                     vendingmachine.item_vended()
-                    vendingmachine.save()
+                    vendingmachine.vended_items_count()
+                    inventory.item_vended(beverage.name)
                     inventory.save()
                     beverage.delete()
-                    return Response(status=status.HTTP_200_OK, headers={'X-Coins': vendingmachine.item_vended(), 'X-Inventory-Remaining': inventory.get_item_count(beverage.name)})
-                
-            return Response(status=status.HTTP_403_FORBIDDEN, headers={'X-Coins': vendingmachine.return_coin()})
+                    beverage.save()
+                    vendingmachine.save()
+                    return Response({'quantity': vendingmachine.vended_items_count() }, status=status.HTTP_200_OK, headers={'X-Coins': vendingmachine.item_vended(), 'X-Inventory-Remaining': inventory.get_item_count(beverage.name)})
+            else:    
+                return Response(status=status.HTTP_403_FORBIDDEN, headers={'X-Coins': vendingmachine.return_coin()})
         else:
             return Response(status=status.HTTP_404_NOT_FOUND, headers={'X-Coins':vendingmachine.coin})
 

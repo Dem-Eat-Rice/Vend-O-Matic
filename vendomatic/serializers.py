@@ -1,10 +1,12 @@
 from rest_framework import serializers
 from .models import VendingMachine, Inventory, Beverage
 
+# These serializers would be utilized if I needed to send back models in JSON
+
 class VendingMachineSerializer(serializers.ModelSerializer):
     class Meta:
         model = VendingMachine
-        fields = ['id', 'name', 'coin']
+        fields = ['id', 'name', 'coin', 'total_coin', 'vended_items']
 
 class BeverageSerializer(serializers.ModelSerializer):
     class Meta:
